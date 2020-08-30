@@ -2,6 +2,13 @@
 
 #include "cube.h"
 
+#include <NoMercy.hpp>
+#ifdef _DEBUG
+#pragma comment( lib, "NoMercy_x86_d.lib" )
+#else
+#pragma comment( lib, "NoMercy_x86.lib" )
+#endif
+
 void cleanup(char *msg)         // single program exit point;
 {
     if(clientlogfile) clientlogfile->fflush();
@@ -997,6 +1004,11 @@ void sanitychecks()
 
 #define DEFAULTPROFILEPATH "profile"
 
+void __stdcall OnNoMercyMessage(int Code, const char* c_szMessage, const void* lpParam)
+{
+    clientlogf("[NoMercy] %u (%s)", Code, c_szMessage);
+}
+
 int main(int argc, char **argv)
 {
     DEBUGCODE(sanitychecks());
@@ -1016,6 +1028,10 @@ int main(int argc, char **argv)
     char *initdemo = NULL;
 
     if(bootclientlog) cvecprintf(*bootclientlog, "######## start logging: %s\n", timestring(true));
+
+    auto nm_data = NoMercy::NoMercyData_V1{ "lic_cod", AC_VERSION, &OnNoMercyMessage };
+    if (!NM_Initialize(1, &nm_data))
+        return EXIT_FAILURE;
 
     const char *initmap = rndmapname();
     loopi(NUMGUNS) crosshairnames[i] = gunnames[i] = guns[i].modelname;
@@ -1366,6 +1382,7 @@ int main(int argc, char **argv)
         pollautodownloadresponse();
     }
 
+    NM_Finalize();
     quit();
     return EXIT_SUCCESS;
 

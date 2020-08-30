@@ -1,6 +1,16 @@
 .travis.yml
 *.o
 *.lo
+*.obj
+*.idb
+*.pdb
+*.pch
+*.log
+*.ipch
+*.db
+*.suo
+*.ilk
+source/vcpp/Debug/
 shadows.dat
 bin_unix/native_client
 bin_unix/native_server
